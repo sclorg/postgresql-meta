@@ -20,7 +20,7 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.0
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -60,6 +60,10 @@ Collection or packages depending on %{scl} Software Collection.
 
 %package scldevel
 Summary: Package shipping development files for %{scl}
+%if 0%{?rhel} == 6
+# implicitly required on RHEL7+, rhbz#1478831
+Requires: %scl_runtime
+%endif
 
 %description scldevel
 Package shipping development files, especially usefull for development of
@@ -224,6 +228,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 
 
 %changelog
+* Wed Aug 16 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0-11
+- scldevel subpackage to depend on runtime subpackage
+
 * Mon Jun 26 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0-9
 - require contrib-syspaths by syspaths
 

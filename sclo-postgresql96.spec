@@ -20,7 +20,7 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.0
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -99,6 +99,8 @@ elseif var == "JAVACONFDIRS" then                               \
     print(rpm.expand('export %1=%2:${%1:-/etc/java}'))          \
 elseif var == "XDG_CONFIG_DIRS" then                            \
     print(rpm.expand('export %1=%2:${%1:-/etc/xdg}'))           \
+elseif var == "XDG_DATA_DIRS" then                              \
+    print(rpm.expand('export %1=%2:${%1:-/usr/local/share:/usr/share}')) \
 else                                                            \
     print(rpm.expand('export %1=%2${%1:+:$%1}'))                \
 end                                                             \
@@ -156,10 +158,6 @@ prepend-path X_SCLS %{scl}
 %_compat_scl_env_adjust MANPATH %_mandir
 # For Java Packages Tools to locate java.conf
 %_compat_scl_env_adjust JAVACONFDIRS %_sysconfdir/java
-# For XMvn to locate its configuration file(s)
-%_compat_scl_env_adjust XDG_CONFIG_DIRS %_sysconfdir/xdg
-# For systemtap
-%_compat_scl_env_adjust XDG_DATA_DIRS %_datadir
 # For pkg-config
 %_compat_scl_env_adjust PKG_CONFIG_PATH %_libdir/pkgconfig
 EOF
@@ -228,6 +226,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 
 
 %changelog
+* Mon Sep 04 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0-12
+- don't set XDG_* variables, per rhbz#1464084
+
 * Wed Aug 16 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0-11
 - scldevel subpackage to depend on runtime subpackage
 

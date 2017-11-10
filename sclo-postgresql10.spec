@@ -1,9 +1,10 @@
 # Define SCL name
 %{!?scl_name_prefix: %global scl_name_prefix sclo-}
 %{!?scl_name_base: %global scl_name_base postgresql}
-%{!?version_major: %global version_major 9}
-%{!?version_minor: %global version_minor 6}
-%{!?scl_name_version: %global scl_name_version %{version_major}%{version_minor}}
+
+%{!?version_major: %global version_major 10}
+
+%{!?scl_name_version: %global scl_name_version %{version_major}}
 %{!?scl: %global scl %{scl_name_prefix}%{scl_name_base}%{scl_name_version}}
 
 # Turn on new layout -- prefix for packages and location
@@ -19,8 +20,8 @@
 
 Summary: Package that installs %{scl}
 Name: %{scl}
-Version: 3.0
-Release: 12%{?dist}
+Version: 3.0.1
+Release: 2%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -31,10 +32,10 @@ BuildRequires: scl-utils-build help2man scl-utils-build-helpers
 
 %description
 This is the main package for %{scl} Software Collection, which installs
-necessary packages to use PostgreSQL %{version_major}.%{version_minor} server.
+necessary packages to use PostgreSQL %{version_major} server.
 Software Collections allow to install more versions of the same
 package by using alternative directory structure.
-Install this package if you want to use PostgreSQL %{version_major}.%{version_minor}
+Install this package if you want to use PostgreSQL %{version_major}
 server on your system.
 
 
@@ -62,7 +63,7 @@ Collection or packages depending on %{scl} Software Collection.
 Summary: Package shipping development files for %{scl}
 %if 0%{?rhel} == 6
 # implicitly required on RHEL7+, rhbz#1478831
-Requires: %scl_runtime
+%{?scl_runtime:Requires: %scl_runtime}
 %endif
 
 %description scldevel
@@ -226,6 +227,13 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 
 
 %changelog
+* Fri Nov 10 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0.1-2
+- bootstrap, depend on scl_runtime only if it is defined (when the
+  scl-utils-build is in buildroot, required by implicit sclo-postgresql10-build
+
+* Fri Nov 10 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0.1-1
+- update to sclo-postgresql10
+
 * Mon Sep 04 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0-12
 - don't set XDG_* variables, per rhbz#1464084
 

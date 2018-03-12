@@ -20,8 +20,8 @@
 
 Summary: Package that installs %{scl}
 Name: %{scl}
-Version: 3.0.1
-Release: 2%{?dist}
+Version: 3.1
+Release: 1%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -227,6 +227,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 
 
 %changelog
+* Mon Mar 12 2018 Pavel Raiskup <praiskup@redhat.com> - 3.1-1
+- update to 3.1
+
 * Fri Nov 10 2017 Pavel Raiskup <praiskup@redhat.com> - 3.0.1-2
 - bootstrap, depend on scl_runtime only if it is defined (when the
   scl-utils-build is in buildroot, required by implicit sclo-postgresql10-build

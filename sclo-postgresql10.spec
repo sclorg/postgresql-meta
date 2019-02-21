@@ -21,7 +21,7 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -84,17 +84,10 @@ Requires: %{?scl_prefix}postgresql-contrib-syspaths
 %prep
 %setup -c -T
 
-%if 0%{!?fedora:1} && 0%{?rhel} <= 7
-%global _compat_scl 1
-%endif
 
-%global _scl_enable_script %{?_compat_scl:enable}%{!?_compat_scl:%{?scl}}
-
-%define _compat_scl_env_adjust() %{lua:                         \
+%define scl_env_adjust() %{lua:                                 \
 var = rpm.expand("%1")                                          \
-if tonumber(rpm.expand('0%{?_compat_scl}'), 10) == 0 then       \
-    print(rpm.expand("prepend-path %1 %2"))                     \
-elseif var == "MANPATH" then                                    \
+if var == "MANPATH" then                                        \
     print(rpm.expand('export %1=%2:$%1'))                       \
 elseif var == "JAVACONFDIRS" then                               \
     print(rpm.expand('export %1=%2:${%1:-/etc/java}'))          \
@@ -141,26 +134,21 @@ mkdir -p %{buildroot}%{_datadir}/aclocal
 %endif
 
 # create enable scriptlet that sets correct environment for collection
-cat <<\EOF | tee -a %{buildroot}%{?_scl_scripts}/%_scl_enable_script
-%if 0%{!?_compat_scl:1}
-#%%Module1.0
-prepend-path X_SCLS %{scl}
-
-%endif
+cat <<\EOF | tee -a %{buildroot}%{?_scl_scripts}/enable
 # For binaries
-%_compat_scl_env_adjust PATH  %_bindir
+%scl_var_adjust PATH  %_bindir
 # For header files
-%_compat_scl_env_adjust CPATH %_includedir
+%scl_var_adjust CPATH %_includedir
 # For libraries during build
-%_compat_scl_env_adjust LIBRARY_PATH %_libdir
+%scl_var_adjust LIBRARY_PATH %_libdir
 # For libraries during linking
-%_compat_scl_env_adjust LD_LIBRARY_PATH %_libdir
+%scl_var_adjust LD_LIBRARY_PATH %_libdir
 # For man pages; empty field makes man to consider also standard path
-%_compat_scl_env_adjust MANPATH %_mandir
+%scl_var_adjust MANPATH %_mandir
 # For Java Packages Tools to locate java.conf
-%_compat_scl_env_adjust JAVACONFDIRS %_sysconfdir/java
+%scl_var_adjust JAVACONFDIRS %_sysconfdir/java
 # For pkg-config
-%_compat_scl_env_adjust PKG_CONFIG_PATH %_libdir/pkgconfig
+%scl_var_adjust PKG_CONFIG_PATH %_libdir/pkgconfig
 EOF
 
 # Automatically generate enable script when needed.
@@ -227,6 +215,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 
 
 %changelog
+* Thu Feb 21 2019 Pavel Raiskup <praiskup@redhat.com> - 3.1-2
+- drop "compat" hacks, those are not needed nowadays
+
 * Mon Mar 12 2018 Pavel Raiskup <praiskup@redhat.com> - 3.1-1
 - update to 3.1
 

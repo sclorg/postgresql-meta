@@ -21,7 +21,7 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -85,7 +85,7 @@ Requires: %{?scl_prefix}postgresql-contrib-syspaths
 %setup -c -T
 
 
-%define scl_env_adjust() %{lua:                                 \
+%define scl_var_adjust() %{lua:                                 \
 var = rpm.expand("%1")                                          \
 if var == "MANPATH" then                                        \
     print(rpm.expand('export %1=%2:$%1'))                       \
@@ -151,9 +151,6 @@ cat <<\EOF | tee -a %{buildroot}%{?_scl_scripts}/enable
 %scl_var_adjust PKG_CONFIG_PATH %_libdir/pkgconfig
 EOF
 
-# Automatically generate enable script when needed.
-%{?scl_enable_script}
-
 cat << EOF | tee -a %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 # macros to be used by packages depended on %scl collection
 %%scl_%{scl_name_base} %{scl}
@@ -215,6 +212,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 
 
 %changelog
+* Thu Feb 28 2019 Pavel Raiskup <praiskup@redhat.com> - 3.1-3
+- rebuild
+
 * Thu Feb 21 2019 Pavel Raiskup <praiskup@redhat.com> - 3.1-2
 - drop "compat" hacks, those are not needed nowadays
 
